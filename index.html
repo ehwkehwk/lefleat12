@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title>KU 21-2 셜록왓슨 지도_범행장소와 동기</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+        <style>
+            html, body, #mapid{
+                height: 100%;
+                margin: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id = 'mapid'>
+        </div>
+        <script>
+            var map = L.map('mapid').setView([37.5378, 127.0253], 11);
+            var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+                attribution:'&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> Contributors'
+            }).addTo(map);
+            var GoogleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var GoogleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+                maxZoom: 20,
+                subdomains:['mt0','mt1','mt2','mt3']
+            })
+            var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                subdomains: 'abcd',
+                minZoom: 1,
+                maxZoom: 16,
+                ext: 'jpg'
+            });
+
+            var baseMaps = {
+                "GoogleStreetMap": GoogleStreets,
+                "GoogleSatelliteMap":GoogleSat,
+                "GoogleTerrain":GoogleTerrain,
+                "GoogleHybrid":GoogleHybrid,
+                "Watercolor":Stamen_Watercolor,
+                "OpenStreetMap":osm
+            };
+            
+            L.control.layers(baseMaps).addTo(map);
+  
+            var myIcon = L.Icon.extend({
+                options: {
+                shadowUrl: 'image/myicon_shadow.png',
+                iconSize:     [46, 62],
+                shadowSize:   [44, 22],
+                iconAnchor:   [23, 62],
+                shadowAnchor: [4, 22],
+                popupAnchor:  [0, -62]
+                }
+            });
+
+            var 경찰서1 = new myIcon({iconUrl: '경찰서1.png'}),
+                공공기관 = new myIcon({iconUrl: '공공기관.png'}),
+                공사장 = new myIcon({iconUrl: '공사장.png'}),
+                공장 = new myIcon({iconUrl: '공장.png'});
+                공중화장실 = new myIcon({iconUrl: '공중화장실.png'});
+                구금장소 = new myIcon({iconUrl: '구금장소.png'});
+                노상 = new myIcon({iconUrl: '노상1.png'}),
+                도서관 = new myIcon({iconUrl: '도서관.png'}),
+                산야 = new myIcon({iconUrl: '산야.png'}),
+                숙박업소목욕탕 = new myIcon({iconUrl: '숙박업소목욕탕.png'});
+                시장노점 = new myIcon({iconUrl: '시장노점.png'});
+                역대합실 = new myIcon({iconUrl: '역대합실.png'});
+                유원지 = new myIcon({iconUrl: '유원지.png'}),
+                의료기관 = new myIcon({iconUrl: '의료기관.png'}),
+                주차장 = new myIcon({iconUrl: '주차장.png'});
+                초등학교 = new myIcon({iconUrl: '초등학교.png'});
+                기타교통수단내 = new myIcon({iconUrl: '기타교통수단내.png'}),
+                기타 = new myIcon({iconUrl: '기타.png'}),
+                L.icon = function (options) {
+                    return new L.Icon(options);
+                };
+  
+
+            //geodata 레이어 생성         
+            var part_1 = L.layerGroup();
+            var part_2 = L.layerGroup();
+            var part_3 = L.layerGroup();  
+            var part_4 = L.layerGroup();  
+            var part_5 = L.layerGroup();  
+            var part_6 = L.layerGroup();  
+            var part_7 = L.layerGroup();
+            var part_8 = L.layerGroup(); 
+            var part_9 = L.layerGroup();  
+            var part_10 = L.layerGroup();  
+            var part_11= L.layerGroup();
+            var part_12= L.layerGroup();  
+            var part_13 = L.layerGroup(); 
+            var part_14 = L.layerGroup();  
+            var part_15= L.layerGroup();
+            var part_16= L.layerGroup();  
+            var part_17 = L.layerGroup(); 
+            var part_18 = L.layerGroup();  
+       
+           
+                      //geodata 레이어 메뉴 이름 정하기
+            var overlays = {
+                "경찰서": part_1,
+                "공공기관": part_2,
+                "공사장": part_3,
+                "공장": part_4,
+                "공중화장실": part_5,
+                "구금장소": part_6,
+                "노상": part_7,
+                "도서관": part_8,
+                "산야": part_9,
+                "숙박업소/목욕탕": part_10,
+                "시장/노점": part_11,
+                "역/대합실": part_12,
+                "유원지": part_13,
+                "의료기관": part_14,
+                "주차장": part_15,
+                "초등학교": part_16,
+                "기타교통수단내": part_17,
+                "기타": part_18,
+            };
+                  
+                //geodata 레이어 메뉴 설정 / true false / topleft topright bottomleft bottomright
+            var ctr_mapLayers = L.control.layers(null, overlays, {collapsed:true, position:'topleft'}).addTo(map);
+
+            var 경찰서 = new myIcon({iconUrl: '경찰서.png'}),
+                가정불화 = new myIcon({iconUrl: '가정불화.png'}),
+                보복 = new myIcon({iconUrl: '보복.png'}),
+                부주의 = new myIcon({iconUrl: '부주의.png'});
+                우발적다툼 = new myIcon({iconUrl: '우발적다툼.png'});
+                우발적묻지마 = new myIcon({iconUrl: '우발적묻지마.png'});
+                유혹 = new myIcon({iconUrl: '유혹.png'}),
+                이욕도박비 = new myIcon({iconUrl: '이욕도박비.png'}),
+                이욕생활비 = new myIcon({iconUrl: '이욕생활비.png'}),
+                이욕유흥비 = new myIcon({iconUrl: '이욕유흥비.png'});
+                이욕치부 = new myIcon({iconUrl: '이욕치부.png'});
+                현실불만 = new myIcon({iconUrl: '현실불만.png'});
+                기타1 = new myIcon({iconUrl: '기타1.png'}),
+                미상 = new myIcon({iconUrl: '미상.png'}),
+                L.icon = function (options) {
+                    return new L.Icon(options);
+                };
+  
+     
+            var part_19 = L.layerGroup();
+            var part_20 = L.layerGroup();
+            var part_21 = L.layerGroup();  
+            var part_22 = L.layerGroup();  
+            var part_23 = L.layerGroup();  
+            var part_24 = L.layerGroup();  
+            var part_25 = L.layerGroup();
+            var part_26 = L.layerGroup(); 
+            var part_27 = L.layerGroup();  
+            var part_28 = L.layerGroup();  
+            var part_29= L.layerGroup();
+            var part_30= L.layerGroup();  
+            var part_31 = L.layerGroup(); 
+            var part_32 = L.layerGroup();  
+
+
+            map.addLayer(part_20)
+            map.addLayer(part_21)
+            map.addLayer(part_22)
+            map.addLayer(part_23)
+            map.addLayer(part_24)
+            map.addLayer(part_25)      
+            map.addLayer(part_26)
+            map.addLayer(part_27)
+            map.addLayer(part_28)
+            map.addLayer(part_29)
+            map.addLayer(part_30)  
+            map.addLayer(part_31)
+            map.addLayer(part_32)   
+     
+            
+            var overlays = {
+                "경찰서": part_19,
+                "가정불화": part_20,
+                "보복": part_21,
+                "부주의": part_22,
+                "우발적(다툼)": part_23,
+                "우발적(묻지마)": part_24,
+                "유혹": part_25,
+                "이욕(도박비)": part_26,
+                "이욕(생활비)": part_27,
+                "이욕(유흥비)": part_28,
+                "이욕(치부)": part_29,
+                "현실불만": part_30,
+                "기타": part_31,
+                "미상": part_32,
+            };
+                  
+               
+            var ctr_mapLayers = L.control.layers(null, overlays, {collapsed:true, position:'bottomleft'}).addTo(map);
+  
+  
+
+            //하단에 geoJSON을 삽입하세요! : point data
+            //var geodata =[     /*이곳에 삽입하기*/     ];
+        
+            var geodata =[
+//셜록왓슨-Place point 데이터 중 일부
+{"type": "Feature", "properties": {"name": "20050413_교도소_살인미수_장소", "class": "Place", "korname": "서울영등포교도소", "category": "구금장소", "for_victim": "근무", "for_murderer": "거주", "address": "*현재 이전함 / 구로구 고척1동 102-1번지 일대", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20050413_교도소_살인미수_장소", "refurl": "null","motivation":"우발적(묻지마)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.8388, 37.47699]}},
+{"type": "Feature", "properties": {"name": "20040410_전여자친구_생매장살인사건_장소", "class": "Place", "korname": "수락산_중턱", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "노원구 상계1동", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20040410_전여자친구_생매장살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0717, 37.6742]}},
+{"type": "Feature", "properties": {"name": "20041221_구로역_살인미수_장소", "class": "Place", "korname": "1호선_구로역_플랫폼", "category": "역/대합실", "for_victim": "생활반경", "for_murderer": "무관", "address": "서울특별시 구로구 구로중앙로 174", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20041221_구로역_살인미수_장소", "refurl": "null","motivation":"기타","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.88251, 37.50343]}},
+{"type": "Feature", "properties": {"name": "20010814_우비_살인사건_장소", "class": "Place", "korname": "5호선_마포역_부근", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울특별시 마포구 마포대로 33", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20010814_우비_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.94708, 37.5407]}},
+{"type": "Feature", "properties": {"name": "20060501_철도공안대낮_살인미수_장소", "class": "Place", "korname": "서울역_3층_대합실", "category": "역/대합실", "for_victim": "무관", "for_murderer": "무관", "address": "서울 중구 한강대로 405", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20060501_철도공안대낮_살인미수_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.97078, 37.55453]}},
+{"type": "Feature", "properties": {"name": "20060317_청와대행정관부인_살인사건_장소", "class": "Place", "korname": "동대문구_전농교회_앞_도로_승용차_안", "category": "기타교통수단내", "for_victim": "생활반경", "for_murderer": "생활반경", "address": "서울 동대문구 전농동 692-1", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20060317_청와대행정관부인_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.05523, 37.57679]}},
+{"type": "Feature", "properties": {"name": "20070818_홍익대택시_살인사건_장소", "class": "Place", "korname": "홍익대_앞_길가", "category": "노상", "for_victim": "생활반경", "for_murderer": "무관", "address": "서울 마포구 와우산로 94", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20070818_홍익대택시_살인사건_장소", "refurl": "null","motivation":"미상","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.92612, 37.5523]}},
+{"type": "Feature", "properties": {"name": "20070413_치안센터앞_살인사건_장소", "class": "Place", "korname": "상계2치안센터_앞_길가", "category": "노상", "for_victim": "생활반경", "for_murderer": "생활반경", "address": "서울 노원구 상계로23길 17", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20070413_치안센터앞_살인사건_장소", "refurl": "null","motivation":"미상","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.06859, 37.65891]}},
+{"type": "Feature", "properties": {"name": "20160529_수락산_살인사건_장소", "class": "Place", "korname": "노원구_상계동_수락산_등산로", "category": "산야", "for_victim": "생활반경", "for_murderer": "무관", "address": "노원구 상계9동 수락산로", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160529_수락산_살인사건_장소", "refurl": "null","motivation":"현실불만","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.06604, 37.66804]}},
+{"type": "Feature", "properties": {"name": "20161019_오패산터널_살인사건_장소", "class": "Place", "korname": "강북구_미아동_오패산터널_입구", "category": "노상", "for_victim": "무관", "for_murderer": "근무", "address": "강북구 미아동 오패산 터널", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20161019_오패산터널_살인사건_장소", "refurl": "null","motivation":"기타","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0284, 37.6351]}},
+{"type": "Feature", "properties": {"name": "20160517_강남역_살인사건_장소", "class": "Place", "korname": "서초구_서초동_강남역근처_공용화장실", "category": "공중화장실", "for_victim": "여가공간", "for_murderer": "근무", "address": "서초구 서초대로77길 48 남경빌딩", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160517_강남역_살인사건_장소", "refurl": "null","motivation":"우발적(묻지마)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.02517, 37.50193]}},
+{"type": "Feature", "properties": {"name": "20150617_변호사_살인미수_장소_장소", "class": "Place", "korname": "서초구_반포동_법무법인_강남_앞_도로", "category": "노상", "for_victim": "근무", "for_murderer": "비즈니스", "address": "서울 서초구 서초중앙로 199 장학재단빌딩", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20150617_변호사_살인미수_장소_장소", "refurl": "null","motivation":"보복","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.0121, 37.4996]}},
+{"type": "Feature", "properties": {"name": "20160404_창동역_살인미수_장소", "class": "Place", "korname": "도봉구_창동_창동역", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "도봉구 창동역 근처", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160404_창동역_살인미수_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.04777, 37.65312]}},
+{"type": "Feature", "properties": {"name": "20171213_대림역9번출구_살인사건_장소", "class": "Place", "korname": "영등포구_대림역9번출구_근처_골목길", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "영등포구 대림동 대림역9번출구", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20171213_대림역9번출구_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.8969, 37.49297]}},
+{"type": "Feature", "properties": {"name": "20080909_조계사_피습사건_장소", "class": "Place", "korname": "조계사_옆_공원", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서울 종로구 우정국로 55", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20080909_조계사_피습사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.98131, 37.57405]}},
+{"type": "Feature", "properties": {"name": "20080815_홍제동_초등학교앞_살인사건_장소", "class": "Place", "korname": "인왕초등학교_옆_길가", "category": "노상", "for_victim": "생활반경", "for_murderer": "생활반경", "address": "서울 서대문구 세무서길 33-9", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20080815_홍제동_초등학교앞_살인사건_장소", "refurl": "null","motivation":"유혹","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.94451, 37.59019]}},
+{"type": "Feature", "properties": {"name": "20080206_뚝섬유원지_살인사건_장소", "class": "Place", "korname": "뚝섬유원지", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서울 광진구 자양동 112", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20080206_뚝섬유원지_살인사건_장소", "refurl": "null","motivation":"기타","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.06661, 37.53116]}},
+{"type": "Feature", "properties": {"name": "20110906_북한산_살인사건_장소", "class": "Place", "korname": "강북구_수유동_북한산국립공원사무소", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "강북구 수유동 북한산국립공원사무소", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20110906_북한산_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0016, 37.641]}},
+{"type": "Feature", "properties": {"name": "20090824_약수역_살인사건_장소", "class": "Place", "korname": "약수역_3호선_승강장", "category": "역/대합실", "for_victim": "무관", "for_murderer": "무관", "address": "서울 중구 다산로 122", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20090824_약수역_살인사건_장소", "refurl": "null","motivation":"기타","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.01061, 37.55477]}},
+{"type": "Feature", "properties": {"name": "20030703_소방관_살인사건_장소", "class": "Place", "korname": "서울_중부소방서_숭인소방파출소", "category": "공공기관", "for_victim": "직장", "for_murderer": "직장", "address": "서울 종로구 숭인동길 63", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20030703_소방관_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.02188, 37.57763]}},
+{"type": "Feature", "properties": {"name": "20090405_노원구야산_살인사건_장소", "class": "Place", "korname": "영축산_계곡", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "서울 노원구 월계동 산130", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20090405_노원구야산_살인사건_장소", "refurl": "null","motivation":"유혹","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0572, 37.6257]}},
+{"type": "Feature", "properties": {"name": "20090302_고속터미널역_살인사건_장소", "class": "Place", "korname": "고속터미널역_9호선", "category": "역/대합실", "for_victim": "거주", "for_murderer": "거주", "address": "서울 서초구 신반포로 188", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20090302_고속터미널역_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0049, 37.505]}},
+{"type": "Feature", "properties": {"name": "20101205_잠원동_살인사건_장소", "class": "Place", "korname": "잠원동성당_근처_골목", "category": "노상", "for_victim": "생활반경", "for_murderer": "생활반경", "address": "서울 서초구 잠원로 110", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20101205_잠원동_살인사건_장소", "refurl": "null","motivation":"유혹","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.00696, 37.51366]}},
+{"type": "Feature", "properties": {"name": "20101106_택시_살인사건_장소", "class": "Place", "korname": "성신여대입구역_앞", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울 성북구 동소문로 102", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20101106_택시_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.01654, 37.59246]}},
+{"type": "Feature", "properties": {"name": "20101005_백사실계곡_살인사건_장소", "class": "Place", "korname": "백사실계곡_근처", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "서울 종로구 부암동 115", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20101005_백사실계곡_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.96653, 37.60079]}},
+{"type": "Feature", "properties": {"name": "20100918_양화대교_살인사건_장소", "class": "Place", "korname": "양화대교_북단_수풀_속_화단", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "서울 마포구 합정동 양화대교 북단", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20100918_양화대교_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.90835, 37.54633]}},
+{"type": "Feature", "properties": {"name": "20100212_반포대교_살인미수사건_장소", "class": "Place", "korname": "반포대교_북단_한강둔치", "category": "산야", "for_victim": "무관", "for_murderer": "무관", "address": "서울 용산구 서빙고동 반포대교 북단", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20100212_반포대교_살인미수사건_장소", "refurl": "null","motivation":"이욕(생활비)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.99403, 37.51964]}},
+{"type": "Feature", "properties": {"name": "20040509_보라매공원_살인사건_장소", "class": "Place", "korname": "보라매공원", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서울 동작구 여의대방로20길 33", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20040509_보라매공원_살인사건_장소", "refurl": "null","motivation":"유혹","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.91951, 37.49273]}},
+{"type": "Feature", "properties": {"name": "20100709_가로공원_살인미수사건_장소", "class": "Place", "korname": "신림동_가로공원", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서울 관악구 신림동 1472-1", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20100709_가로공원_살인미수사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.92637, 37.48408]}},
+{"type": "Feature", "properties": {"name": "20211015_역삼역 근처_살인미수사건_장소", "class": "Place", "korname": "역삼역", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울특별시 강남구 테헤란로 156", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20211015_역삼역 근처_살인미수사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.03638, 37.50068]}},
+{"type": "Feature", "properties": {"name": "20181213_선릉역_살인미수사건_장소", "class": "Place", "korname": "선릉역", "category": "역/대합실", "for_victim": "무관", "for_murderer": "무관", "address": "서울특별시 강남구 테헤란로 340", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20181213_선릉역_살인미수사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.049, 37.50459]}},
+{"type": "Feature", "properties": {"name": "20151207_다문화일가족_살인사건_장소", "class": "Place", "korname": "구로구_오금교_밑", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울 구로구 신도림동 오금교", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20151207_다문화일가족_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.87457, 37.50761]}},
+{"type": "Feature", "properties": {"name": "20181231_강북삼성병원_살인사건_장소", "class": "Place", "korname": "종로구_삼성병원안", "category": "의료기관", "for_victim": "근무", "for_murderer": "생활반경", "address": "서울특별시 종로구 교남동 새문안로 29", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20181231_강북삼성병원_살인사건_장소", "refurl": "null","motivation":"미상","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.9675278, 37.5686579]}},
+{"type": "Feature", "properties": {"name": "20180120_서울장여관_살인사건_장소", "class": "Place", "korname": "종로구_여관_안", "category": "숙박업소/목욕탕", "for_victim": "숙박", "for_murderer": "숙박", "address": "서울특별시 종로구 효제동 21-10번지", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20180120_서울장여관_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0019274, 37.57653386]}},
+{"type": "Feature", "properties": {"name": "20130920_영등포역파출소_살인사건_장소", "class": "Place", "korname": "영등포구_파출소", "category": "공공기관", "for_victim": "쌍방폭행_조사지", "for_murderer": "쌍방폭행_조사지", "address": "서울 영등포구 경인로90길 9-2", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20130920_영등포역파출소_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.90138, 37.51346]}},
+{"type": "Feature", "properties": {"name": "20140322_공익묻지마_살인사건_장소", "class": "Place", "korname": "서초구_반포1동_주택가_주차장", "category": "주차장", "for_victim": "무관", "for_murderer": "거주", "address": "서울 반포1동 701-45", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20140322_공익묻지마_살인사건_장소", "refurl": "null","motivation":"우발적(묻지마)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.01783, 37.50879]}},
+{"type": "Feature", "properties": {"name": "20150623_충정로우체국_살인미수_장소", "class": "Place", "korname": "서대문구_충현동_충정로우체국_뒷길", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울 서대문구 통일로 127", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20150623_충정로우체국_살인미수_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.96576, 37.5658]}},
+{"type": "Feature", "properties": {"name": "20150306_양천공원아들_살인미수_장소", "class": "Place", "korname": "양천구_신정동_양천공원_공중화장실", "category": "공중화장실", "for_victim": "무관", "for_murderer": "무관", "address": "서울 양천구 목동동로 117", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20150306_양천공원아들_살인미수_장소", "refurl": "null","motivation":"이욕(치부)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.86757, 37.51776]}},
+{"type": "Feature", "properties": {"name": "20130313_응암초교부근_살인미수_장소", "class": "Place", "korname": "은평구_응암2동_응암초교_길가", "category": "노상", "for_victim": "거주", "for_murderer": "거주", "address": "서울 은평구 백련산로", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20130313_응암초교부근_살인미수_장소", "refurl": "null","motivation":"기타","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.92267, 37.58897]}},
+{"type": "Feature", "properties": {"name": "20160703_노래방_살인사건_장소", "class": "Place", "korname": "구로구_가리봉동_노래방", "category": "시장/노점", "for_victim": "근무", "for_murderer": "무관", "address": "서울 구로구 가리봉동 88-18번지", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160703_노래방_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.88632, 37.48396]}},
+{"type": "Feature", "properties": {"name": "20151111_아파트_살인사건_장소", "class": "Place", "korname": "용산구_이태원동_아파트_정자", "category": "기타", "for_victim": "거주", "for_murderer": "거주", "address": "서울 용산구 녹사평대로 286", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20151111_아파트_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.98925, 37.54261]}},
+{"type": "Feature", "properties": {"name": "20090323_한강거북선나루터_살인사건_장소", "class": "Place", "korname": "용산구_이촌동_한강거북선나루터", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서울 용산구 이촌동 302-183", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20090323_한강거북선나루터_살인사건_장소", "refurl": "null","motivation":"기타","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.96873, 37.51699]}},
+{"type": "Feature", "properties": {"name": "20120731_산부인과_살인사건_장소", "class": "Place", "korname": "강남구_압구정동_산부인과병원", "category": "의료기관", "for_victim": "근무", "for_murderer": "생활반경", "address": "서울 강남구 언주로 871 호산병원 B동", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20120731_산부인과_살인사건_장소", "refurl": "null","motivation":"부주의","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.03339, 37.52853]}},
+{"type": "Feature", "properties": {"name": "20120309_중곡역_살인사건_장소", "class": "Place", "korname": "광진구_중곡역_플랫폼", "category": "역/대합실", "for_victim": "무관", "for_murderer": "무관", "address": "서울 광진구 능동로 417", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20120309_중곡역_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.08435, 37.56594]}},
+{"type": "Feature", "properties": {"name": "20110801_공사현장_살인미수_장소", "class": "Place", "korname": "영등포구_양평동_공사현장", "category": "공사장", "for_victim": "근무", "for_murderer": "근무", "address": "서울 영등포구 문래로 21", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20110801_공사현장_살인미수_장소", "refurl": "null","motivation":"보복","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.88449, 37.52087]}},
+{"type": "Feature", "properties": {"name": "20150611_양파공장_살인사건_장소", "class": "Place", "korname": "송파구_오륜동_양파납품비닐하우스", "category": "공장", "for_victim": "근무", "for_murderer": "근무", "address": "서울 송파구 오륜동", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20150611_양파공장_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수/미수"}, "geometry": {"type": "Point", "coordinates": [127.14004, 37.51235]}},
+{"type": "Feature", "properties": {"name": "20111030_국립도서관_살인미수_장소", "class": "Place", "korname": "송파구_반포동_국립중앙디지털도서관", "category": "도서관", "for_victim": "근무", "for_murderer": "생활반경", "address": "서울 서초구 반포대로 201", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20111030_국립도서관_살인미수_장소", "refurl": "null","motivation":"보복","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [127.00367, 37.49804]}},
+{"type": "Feature", "properties": {"name": "20211004_공인중개사_살인사건_장소", "class": "Place", "korname": "은평구_역촌동__공인중개소", "category": "기타", "for_victim": "근무", "for_murderer": "무관", "address": "서울 은평구 진흥로 1길 51", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20211004_공인중개사_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.91815, 37.60507]}},
+{"type": "Feature", "properties": {"name": "202108008_영등포시장역_살인사건_장소", "class": "Place", "korname": "영등포구_영등포동_지하철역_근처", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울 영등포구 영등포동5가 62-1", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/202108008_영등포시장역_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.90497, 37.52269]}},
+{"type": "Feature", "properties": {"name": "압구정파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강남구 압구정로 311", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/압구정파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.03555, 37.5293]}},
+{"type": "Feature", "properties": {"name": "천호지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강동구 구천면로 141", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/천호지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.12082, 37.54251]}},
+{"type": "Feature", "properties": {"name": "서울강북경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울시 강북구 오패산로 406", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울강북경찰서", "refurl": "https://www.smpa.go.kr/gb/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.02738, 37.63728]}},
+{"type": "Feature", "properties": {"name": "인수파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강북구 인수봉로 227", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/인수파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.01225, 37.6397]}},
+{"type": "Feature", "properties": {"name": "화양지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 광진구 능동로17길 39", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/화양지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.07142, 37.54667]}},
+{"type": "Feature", "properties": {"name": "중곡1파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 광진구 능동로 385", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/중곡1파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.08269, 37.5637]}},
+{"type": "Feature", "properties": {"name": "자양파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 광진구 뚝섬로36길 9-0", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/자양파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.07157, 37.53377]}},
+{"type": "Feature", "properties": {"name": "신구로지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 구로구 새말로 26", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/신구로지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.88373, 37.5023]}},
+{"type": "Feature", "properties": {"name": "신도림치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 구로구 신도림로 40", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/신도림치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.88086, 37.50763]}},
+{"type": "Feature", "properties": {"name": "구로치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 구로구 경인로 577", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/구로치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.8811, 37.50414]}},
+{"type": "Feature", "properties": {"name": "가리봉파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 구로구 남부순환로 1275", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/가리봉파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.89232, 37.4791]}},
+{"type": "Feature", "properties": {"name": "서울남대문경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울시 중구 한강대로 410", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울남대문경찰서", "refurl": "https://www.smpa.go.kr/ndm/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.97343, 37.55473]}},
+{"type": "Feature", "properties": {"name": "마들지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 노원구 한글비석로 489", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/마들지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.06362, 37.66451]}},
+{"type": "Feature", "properties": {"name": "상계1파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 노원구 동일로 1693", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/상계1파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.05503, 37.67962]}},
+{"type": "Feature", "properties": {"name": "상계2치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 노원구 상계로23길 17", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/상계2치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.06849, 37.6588]}},
+{"type": "Feature", "properties": {"name": "창동지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 도봉구 노해로 392", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/창동지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.05174, 37.65234]}},
+{"type": "Feature", "properties": {"name": "용강지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 마포구 토정로31길 35", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/용강지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.94302, 37.54244]}},
+{"type": "Feature", "properties": {"name": "홍익지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 마포구 양화로11길 63", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/홍익지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.9135, 37.55201]}},
+{"type": "Feature", "properties": {"name": "망원2치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 마포구 월드컵로 31길 18", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/망원2치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.90375, 37.56164]}},
+{"type": "Feature", "properties": {"name": "구반포치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서초구 신반포로 15길 24", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/구반포치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.99458, 37.50445]}},
+{"type": "Feature", "properties": {"name": "서울서대문경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서대문구 통일로 113", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울서대문경찰서", "refurl": "https://www.smpa.go.kr/sdm/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.96681, 37.56486]}},
+{"type": "Feature", "properties": {"name": "신촌지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서대문구 신촌역로 22", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/신촌지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.94292, 37.55852]}},
+{"type": "Feature", "properties": {"name": "홍제파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서대문구 통일로 441-1", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/홍제파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.94437, 37.5881]}},
+{"type": "Feature", "properties": {"name": "응암3파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 은평구 응암로 208", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/응암3파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.91754, 37.59051]}},
+{"type": "Feature", "properties": {"name": "역촌파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 은평구 연서로 61", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/역촌파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.91508, 37.60462]}},
+{"type": "Feature", "properties": {"name": "서울서초경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울시 서초구 반포대로 179", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울서초경찰서", "refurl": "https://www.smpa.go.kr/sc/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.00529, 37.49538]}},
+{"type": "Feature", "properties": {"name": "반포지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서초구 신반포로 190", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/반포지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.00517, 37.50596]}},
+{"type": "Feature", "properties": {"name": "반포치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서초구 주흥15길 41", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/반포치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.01711, 37.50788]}},
+{"type": "Feature", "properties": {"name": "서울성북경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 성북구 보문로 170", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울성북경찰서", "refurl": "https://www.smpa.go.kr/sb/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.01622, 37.58972]}},
+{"type": "Feature", "properties": {"name": "오금파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 송파구 마천로8길 17", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/오금파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.12799, 37.50685]}},
+{"type": "Feature", "properties": {"name": "도곡지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강남구 언주로 426", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/도곡지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.04371, 37.50131]}},
+{"type": "Feature", "properties": {"name": "일원지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강남구 일원로3길 35", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/일원지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.0834, 37.4924]}},
+{"type": "Feature", "properties": {"name": "대왕파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 강남구 헌릉로 623", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/대왕파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.10733, 37.46516]}},
+{"type": "Feature", "properties": {"name": "서울양천경찰서", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울시 양천구 목동동로 99", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울양천경찰서", "refurl": "https://www.smpa.go.kr/yc/","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.86566, 37.51659]}},
+{"type": "Feature", "properties": {"name": "중앙지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 영등포구 영등포로46길 14", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/중앙지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.90742, 37.518]}},
+{"type": "Feature", "properties": {"name": "양평파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 영등포구 선유로 95", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/양평파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.88959, 37.52268]}},
+{"type": "Feature", "properties": {"name": "대림지구대", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 영등포구 대림로23길 16-1", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/대림지구대", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.89862, 37.49337]}},
+{"type": "Feature", "properties": {"name": "영등포역파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 영등포구 경인로90길 9-2", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/영등포역파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.90138, 37.51346]}},
+{"type": "Feature", "properties": {"name": "이태원파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 용산구 이태원로 184", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/이태원파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.99431, 37.53433]}},
+{"type": "Feature", "properties": {"name": "보광파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 용산구 보광로 27", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/보광파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.00004, 37.52676]}},
+{"type": "Feature", "properties": {"name": "평창파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 종로구 평창문화로 46", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/평창파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.9666, 37.60525]}},
+{"type": "Feature", "properties": {"name": "신문로파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 종로구 경희궁길 6-3", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/신문로파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.9722, 37.57072]}},
+{"type": "Feature", "properties": {"name": "청진파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 종로구 삼봉로 33", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/청진파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.97901, 37.57257]}},
+{"type": "Feature", "properties": {"name": "종로3가치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 종로구 돈화문로 28", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/종로3가치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.99217, 37.57124]}},
+{"type": "Feature", "properties": {"name": "다산치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 중구 동호로14길 18", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/다산치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.01078, 37.55641]}},
+{"type": "Feature", "properties": {"name": "효제파출소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 종로구 종로41나길 24-6", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/효제파출소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.0049, 37.57296]}},
+{"type": "Feature", "properties": {"name": "이촌한강치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 용산구 양녕로 496", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/이촌한강치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.96309, 37.5203]}},
+{"type": "Feature", "properties": {"name": "전농4치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 동대문구 서울시립대로14길 31", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/전농4치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.05241, 37.57924]}},
+{"type": "Feature", "properties": {"name": "서교치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 마포구 잔다리로6길 29", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서교치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.9208, 37.55239]}},
+{"type": "Feature", "properties": {"name": "보문치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 성북구 보문로13길 27", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/보문치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.02056, 37.5797]}},
+{"type": "Feature", "properties": {"name": "월계치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 노원구 석계로 93", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/월계치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.0615, 37.62282]}},
+{"type": "Feature", "properties": {"name": "잠원치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 서초구 나루터로 38", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/잠원치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [127.01393, 37.51497]}},
+{"type": "Feature", "properties": {"name": "보라매공원치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 동작구 보라매로5길 28", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/보라매공원치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.92077, 37.49083]}},
+{"type": "Feature", "properties": {"name": "서원치안센터", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "서울 관악구 신원로 36", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서원치안센터", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.9292, 37.48192]}},
+{"type": "Feature", "properties": {"name": "서울영등포교도소", "class": "PoliceStation", "korname": "null", "category": "경찰서", "for_victim": "null", "for_murderer": "null", "address": "구로구 고척1동 102-1번지 일대", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/서울영등포교도소", "refurl": "null","motivation":"경찰서","success_type":"경찰서"}, "geometry": {"type": "Point", "coordinates": [126.8388, 37.47699]}},
+{"type": "Feature", "properties": {"name": "20061105_강남친구_살인사건_장소", "class": "Place", "korname": "율현동_강남중고차매매단지_주차장", "category": "주차장", "for_victim": "무관", "for_murderer": "직장", "address": "서울 강남구 율현동 101-10", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20061105_강남친구_살인사건_장소", "refurl": "null","motivation":"이욕(도박비)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.11795, 37.47066]}},
+{"type": "Feature", "properties": {"name": "20160331_종로3가역_살인사건_장소", "class": "Place", "korname": "3호선_종로3가역_플랫폼", "category": "역/대합실", "for_victim": "무관", "for_murderer": "무관", "address": "종로구 묘동 종로3가역", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160331_종로3가역_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.99171, 37.57192]}},
+{"type": "Feature", "properties": {"name": "20160213_한강광나루지구아들_살인사건_장소", "class": "Place", "korname": "송파구_풍납동_광나루한강공원", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "송파구 풍납동 광나루한강공원", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20160213_한강광나루지구아들_살인사건_장소", "refurl": "null","motivation":"가정불화","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.1157, 37.5424]}},
+{"type": "Feature", "properties": {"name": "20150305_주한미대사_살인미수_장소", "class": "Place", "korname": "종로구_세종로_세종문화회관", "category": "공공기관", "for_victim": "비즈니스", "for_murderer": "무관", "address": "종로구 세종대로 175 세종문화회관 세종홀", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20150305_주한미대사_살인미수_장소", "refurl": "null","motivation":"기타","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.97492, 37.57283]}},
+{"type": "Feature", "properties": {"name": "20190326_두암공원_살인사건_장소", "class": "Place", "korname": "영등포구_두암공원_근처_노상", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "영등포구 대림동 두암공원", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20190326_두암공원_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.89757, 37.49571]}},
+{"type": "Feature", "properties": {"name": "20120430_신촌대학생_살인사건_장소", "class": "Place", "korname": "서대문구_창천동_바람산어린이근린공원", "category": "유원지", "for_victim": "무관", "for_murderer": "무관", "address": "서대문구 창천동 바람산어린이근린공원", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20120430_신촌대학생_살인사건_장소", "refurl": "null","motivation":"보복","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.93998, 37.55821]}},
+{"type": "Feature", "properties": {"name": "20120928_계성초_살인미수_장소", "class": "Place", "korname": "서초구_반포2동_계성초교", "category": "초등학교", "for_victim": "무관", "for_murderer": "학교", "address": "서울 서초구 신반포로 19길 23", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20120928_계성초_살인미수_장소", "refurl": "null","motivation":"현실불만","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.99574, 37.50464]}},
+{"type": "Feature", "properties": {"name": "20131102_대청초_살인사건_장소", "class": "Place", "korname": "강남구_양재대로_대청초교_운동장", "category": "초등학교", "for_victim": "생활반경", "for_murderer": "생활반경", "address": "서울 강남구 양재대로 55길 28", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20131102_대청초_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.0874, 37.49292]}},
+{"type": "Feature", "properties": {"name": "20140312_월드컵시장_살인미수_장소", "class": "Place", "korname": "마포구_망원2동_월드컵시장내_상점", "category": "시장/노점", "for_victim": "생활반경", "for_murderer": "근무", "address": "서울 마포구 망원동 480-8", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20140312_월드컵시장_살인미수_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"미수"}, "geometry": {"type": "Point", "coordinates": [126.90508, 37.5588]}},
+{"type": "Feature", "properties": {"name": "20120127_공원고등학생_살인사건_장소", "class": "Place", "korname": "구로구_화원어린이공원_이동식화장실", "category": "공중화장실", "for_victim": "무관", "for_murderer": "무관", "address": "서울 구로구 구로동 화원어린이공원", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20120127_공원고등학생_살인사건_장소", "refurl": "null","motivation":"이욕(유흥비)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [126.8798, 37.49799]}},
+{"type": "Feature", "properties": {"name": "20200101_화양동_살인사건_장소", "class": "Place", "korname": "광진구_화양동_길거리", "category": "노상", "for_victim": "무관", "for_murderer": "무관", "address": "서울 광진구 화양동 48-14", "url": "http://dh.aks.ac.kr/~jisun/edu/index.php/20200101_화양동_살인사건_장소", "refurl": "null","motivation":"우발적(다툼)","success_type":"기수"}, "geometry": {"type": "Point", "coordinates": [127.06794, 37.5411]}},
+
+//셜록왓슨 PoliceStaion 중 일부
+
+];  
+
+
+
+            //포인트 데이터 설정
+            L.geoJson(geodata, {
+                onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<a href="' + feature.properties.url + '" target="_blank"><center><big><b>' + "[" + feature.properties.class + "]" +" " + feature.properties.name + '</b></big></a><br/>' + feature.properties.address)},
+
+                pointToLayer: function(feature, latlng) { 
+                    switch (feature.properties.category) {
+                        case '경찰서': return L.marker(latlng, {icon: 경찰서1}).addTo(part_1);
+                                case '공공기관': return L.marker(latlng, {icon: 공공기관}).addTo(part_2);
+                                case '공사장': return L.marker(latlng, {icon: 공사장}).addTo(part_3);
+                                case '공장': return L.marker(latlng, {icon: 공장}).addTo(part_4);
+                                case '공중화장실': return L.marker(latlng, {icon: 공중화장실}).addTo(part_5);
+                                case '구금장소': return L.marker(latlng, {icon: 구금장소}).addTo(part_6);
+                                case '노상': return L.marker(latlng, {icon: 노상}).addTo(part_7);
+                                case '도서관': return L.marker(latlng, {icon: 도서관}).addTo(part_8);
+                                case '산야': return L.marker(latlng, {icon: 산야}).addTo(part_9);
+                                case '숙박업소/목욕탕': return L.marker(latlng, {icon: 숙박업소목욕탕}).addTo(part_10);
+                                case '시장/노점': return L.marker(latlng, {icon: 시장노점}).addTo(part_11);
+                                case '역/대합실': return L.marker(latlng, {icon: 역대합실}).addTo(part_12);
+                                case '유원지': return L.marker(latlng, {icon: 유원지}).addTo(part_13);
+                                case '의료기관': return L.marker(latlng, {icon: 의료기관}).addTo(part_14);
+                                case '주차장': return L.marker(latlng, {icon: 주차장}).addTo(part_15);
+                                case '초등학교': return L.marker(latlng, {icon: 초등학교}).addTo(part_16);
+                                case '기타교통수단내': return L.marker(latlng, {icon: 기타교통수단내}).addTo(part_17);
+                                case '기타': return L.marker(latlng, {icon: 기타}).addTo(part_18);
+                            }
+                    }
+                });
+
+                L.geoJson(geodata, {
+                onEachFeature: function (feature, layer) {
+                            layer.bindPopup('<a href="' + feature.properties.url + '" target="_blank"><center><big><b>' + "[" + feature.properties.class + "]" +" " + feature.properties.name + '</b></big></a><br/>' + feature.properties.address)},
+
+                pointToLayer: function(feature, latlng) { 
+                    switch (feature.properties.motivation) {
+                        case '경찰서': return L.marker(latlng, {icon: 경찰서}).addTo(part_19);
+                                case '가정불화': return L.marker(latlng, {icon: 가정불화}).addTo(part_20);
+                                case '보복': return L.marker(latlng, {icon: 보복}).addTo(part_21);
+                                case '부주의': return L.marker(latlng, {icon: 부주의}).addTo(part_22);
+                                case '우발적(다툼)': return L.marker(latlng, {icon: 우발적다툼}).addTo(part_23);
+                                case '우발적(묻지마)': return L.marker(latlng, {icon: 우발적묻지마}).addTo(part_24);
+                                case '유혹': return L.marker(latlng, {icon: 유혹}).addTo(part_25);
+                                case '이욕(도박비)': return L.marker(latlng, {icon: 이욕도박비}).addTo(part_26);
+                                case '이욕(생활비)': return L.marker(latlng, {icon: 이욕생활비}).addTo(part_27);
+                                case '이욕(유흥비)': return L.marker(latlng, {icon: 이욕유흥비}).addTo(part_28);
+                                case '이욕(치부)': return L.marker(latlng, {icon: 이욕치부}).addTo(part_29);
+                                case '현실불만': return L.marker(latlng, {icon: 현실불만}).addTo(part_30);
+                                case '기타': return L.marker(latlng, {icon: 기타1}).addTo(part_31);
+                                case '미상': return L.marker(latlng, {icon: 미상}).addTo(part_32);
+                            }
+                    }
+                });
+
+
+ 
+  
+                //폴리건 데이터 위경도 좌표        
+                
+                //폴리건 데이터 그리기
+              
+
+                //라인 데이터 위경도 좌표
+                
+                //라인 데이터 그리기
+           
+ 
+
+	    </script> 
+    </body>
+</html>
+
